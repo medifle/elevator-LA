@@ -1,5 +1,6 @@
 from math import ceil
 from random import gauss
+from typing import List
 from constant import Constant
 import sys
 
@@ -25,6 +26,52 @@ def environment(action: int) -> int:
         return 0
     else:
         return 1
+
+
+def got_reward_tsetlin(self, state: int) -> int:
+    """return new current state"""
+    if state % self.state_depth != 1:
+        state -= 1
+    return state
+
+
+def got_penalty_tsetlin(self, state: int) -> int:
+    """return new current state"""
+    # if state is max, go back to N (the head of the first line)
+    if state == self.state_depth * self.actions:
+        state = self.state_depth
+    # else if state if the head of a line, jump onto the head of the next line
+    elif state % self.state_depth == 0:
+        state += self.state_depth
+    else:
+        state += 1
+    return state
+
+
+def get_action_fssa(self, state: int) -> int:
+    if state % self.state_depth == 0:
+        return state // self.state_depth
+    return state // self.state_depth + 1
+
+
+def train_fssa(self) -> List[int]:
+    print("%s : start training..." % self.__class__.__name__)
+    result = [0 for i in range(self.actions)]
+    for e in range(self.experiments):
+        for t in range(self.training_times):
+            action = self.get_action(self.state)
+            beta = environment(action)
+
+            # print('{:>2}'.format(self.state), action, beta)  # test
+
+            if beta == 1:  # penalty
+                self.state = self.got_penalty(self.state)
+            else:  # reward
+                self.state = self.got_reward(self.state)
+            if t > (self.training_times - self.time_avg_range):
+                result[action - 1] += 1
+    print("%s : finished" % self.__class__.__name__)
+    return [r / (self.experiments * (self.time_avg_range // 100)) for r in result]
 
 
 if __name__ == '__main__':
