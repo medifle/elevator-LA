@@ -81,14 +81,30 @@ def train_fssa(self) -> List[int]:
     return [r / (self.experiments * (self.time_avg_range // 100)) for r in result]
 
 
+def train_vssa(self) -> List[int]:
+    print("%s : start training..." % self.__class__.__name__)
+    result = [0 for i in range(self.actions)]
+    for e in range(self.experiments):
+        for t in range(self.training_times):
+            action = self.get_action()
+            beta = environment(action)
+
+            # print(self.state, action, beta)  # test
+            if beta == 0:
+                self.got_reward(action)
+
+            if t > (self.training_times - self.time_avg_range):
+                result[action - 1] += 1
+    print("%s : finished" % self.__class__.__name__)
+    return [r / (self.experiments * (self.time_avg_range // 100)) for r in result]
+
+
 if __name__ == '__main__':
     # test
     count = 0
-    for e in range(50):
-        arr = []
-
-        # arr.append(environment(1))
-        # for i in range(1, 7):
-        #     arr.append(environment(i))
-
-        # print(arr)
+    # for e in range(50):
+    #     arr = []
+    #     arr.append(environment(1))
+    #     for i in range(1, 7):
+    #         arr.append(environment(i))
+    #     print(arr)
