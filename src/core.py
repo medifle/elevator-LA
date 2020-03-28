@@ -1,5 +1,6 @@
 from math import ceil
 from random import gauss
+from constant import Constant
 import sys
 
 
@@ -11,7 +12,7 @@ def environment(action: int) -> int:
     Q = [1, 2, 3, 4, 5, 6]
 
     def f(i: int) -> int:
-        h = gauss(0, 1)  # 1 is sigma
+        h = gauss(0, Constant.GAUSS_SIGMA.value)
         fi = 0.8 * Q[i - 1] + 0.4 * ceil(Q[i - 1] / 2) + h
         if fi < 0:
             fi = 0
@@ -31,8 +32,8 @@ if __name__ == '__main__':
     for e in range(50):
         arr = []
 
-        arr.append(environment(1))
+        # arr.append(environment(1))
         # for i in range(1, 7):
         #     arr.append(environment(i))
 
-        print(arr)
+        # print(arr)
