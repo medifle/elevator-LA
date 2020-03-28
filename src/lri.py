@@ -14,6 +14,9 @@ class Lri:
         self.a = Constant.LEARNING_PARAM.value
         self.targetAccuracy = Constant.TARGET_ACCURACY.value
 
+    def reset_state(self):
+        self.state = [1 / self.actions for i in range(self.actions)]
+
     def got_reward(self, action: int) -> None:
         state_length = len(self.state)
         for i in range(state_length):
@@ -24,11 +27,11 @@ class Lri:
 
     def get_action(self) -> int:
         r = uniform(0, sum(self.state))
-        accu = 0
+        prob_accu = 0
         state_length = len(self.state)
         for i in range(state_length):
-            accu += self.state[i]
-            if accu > r:
+            prob_accu += self.state[i]
+            if prob_accu > r:
                 return i + 1
 
     def train(self) -> List[int]:

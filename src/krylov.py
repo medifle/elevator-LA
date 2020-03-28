@@ -14,6 +14,9 @@ class Krylov:
         self.state = randint(1, self.actions * self.state_depth)  # random chosen initial state
         self.targetAccuracy = Constant.TARGET_ACCURACY.value
 
+    def reset_state(self):
+        self.state = randint(1, self.actions * self.state_depth)
+
     def got_reward(self, state: int) -> int:
         return got_reward_tsetlin(self, state)
 

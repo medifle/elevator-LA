@@ -17,7 +17,7 @@ def environment(action: int) -> int:
         print("list index out of range error. i =", action)
         sys.exit()
 
-    Q = [1, 2, 3, 4, 5, 6]
+    Q = Constant.Q.value
 
     def f(i: int) -> int:
         h = gauss(0, Constant.GAUSS_SIGMA.value)
@@ -65,6 +65,7 @@ def train_fssa(self) -> List[int]:
     print("%s : start training..." % self.__class__.__name__)
     result = [0 for i in range(self.actions)]
     for e in range(self.experiments):
+        self.reset_state()
         for t in range(self.training_times):
             action = self.get_action(self.state)
             beta = environment(action)
@@ -85,12 +86,13 @@ def train_vssa(self) -> List[int]:
     print("%s : start training..." % self.__class__.__name__)
     result = [0 for i in range(self.actions)]
     for e in range(self.experiments):
+        self.reset_state()
         for t in range(self.training_times):
             action = self.get_action()
             beta = environment(action)
 
-            # print(self.state, action, beta)  # test
             if beta == 0:
+                # print(self.state, action, beta)  # test
                 self.got_reward(action)
 
             if t > (self.training_times - self.time_avg_range):
@@ -108,3 +110,6 @@ if __name__ == '__main__':
     #     for i in range(1, 7):
     #         arr.append(environment(i))
     #     print(arr)
+
+    # for i in range(1000):
+    #     print(gauss(0, 2))
