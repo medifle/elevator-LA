@@ -12,7 +12,7 @@ class Tsetlin:
         self.training_times = Constant.TRAINING_TIMES.value
         self.state_depth = Constant.STATE_DEPTH.value
         self.state = randint(1, self.actions * self.state_depth)  # random chosen initial state
-        self.targetAccuracy = 0.90  # for speed test
+        self.targetAccuracy = Constant.TARGET_ACCURACY.value
 
     def got_reward(self, state: int) -> int:
         return got_reward_tsetlin(self, state)

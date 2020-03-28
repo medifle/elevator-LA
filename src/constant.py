@@ -8,3 +8,4 @@ class Constant(Enum):
     TIME_AVG_RANGE = 1000
     STATE_DEPTH = 6
     GAUSS_SIGMA = 1.5
+    TARGET_ACCURACY = 0.9  # speed test

@@ -1,10 +1,10 @@
 from constant import Constant
-from core import got_penalty_tsetlin, train_fssa, get_action_fssa
+from core import got_penalty_tsetlin, train_fssa, get_action_fssa, answer_with_probability, got_reward_tsetlin
 from random import randint
 from typing import List
 
 
-class Krinsky:
+class Krylov:
     def __init__(self):
         self.actions = Constant.ACTIONS.value
         self.experiments = Constant.EXPERIMENTS.value
@@ -15,13 +15,13 @@ class Krinsky:
         self.targetAccuracy = Constant.TARGET_ACCURACY.value
 
     def got_reward(self, state: int) -> int:
-        """return new current state"""
-        while state % self.state_depth != 1:
-            state -= 1
-        return state
+        return got_reward_tsetlin(self, state)
 
     def got_penalty(self, state: int) -> int:
-        return got_penalty_tsetlin(self, state)
+        if answer_with_probability(0.5):
+            return got_penalty_tsetlin(self, state)
+        else:
+            return got_reward_tsetlin(self, state)
 
     def get_action(self, state: int) -> int:
         return get_action_fssa(self, state)
@@ -32,5 +32,5 @@ class Krinsky:
 
 if __name__ == '__main__':
     # test
-    la = Krinsky()
+    la = Krylov()
     print(la.train())

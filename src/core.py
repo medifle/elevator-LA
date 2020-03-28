@@ -1,8 +1,15 @@
 from math import ceil
-from random import gauss
+from random import gauss, random
 from typing import List
 from constant import Constant
 import sys
+
+
+def answer_with_probability(p: float) -> bool:
+    r = random()
+    if r < p:
+        return True
+    return False
 
 
 def environment(action: int) -> int:
@@ -76,6 +83,7 @@ def train_fssa(self) -> List[int]:
 
 if __name__ == '__main__':
     # test
+    count = 0
     for e in range(50):
         arr = []
 
