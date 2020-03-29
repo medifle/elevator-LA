@@ -3,6 +3,7 @@ from random import gauss, random
 from typing import List
 from config import Constant
 from collections import deque
+from plot import plot_group_bar
 import sys
 
 
@@ -63,7 +64,7 @@ def get_action_fssa(self, state: int) -> int:
 
 
 def train_fssa(self) -> List[int]:
-    print("%s: start training..." % self.__class__.__name__)
+    print("{}: start training...".format(self.__class__.__name__))
     accuracy_list = [0 for i in range(self.actions)]
     for e in range(self.experiments):
         self.reset_state()
@@ -78,12 +79,12 @@ def train_fssa(self) -> List[int]:
                 self.state = self.got_reward(self.state)
             if t > (self.training_times - self.time_avg_range):
                 accuracy_list[action - 1] += 1
-    print("%s: finished" % self.__class__.__name__)
+    print("{}: finished".format(self.__class__.__name__))
     return [r / (self.experiments * (self.time_avg_range // 100)) for r in accuracy_list]
 
 
 def train_vssa(self) -> List[int]:
-    print("%s: start training..." % self.__class__.__name__)
+    print("{}: start training...".format(self.__class__.__name__))
     accuracy_list = [0 for i in range(self.actions)]
     for e in range(self.experiments):
         self.reset_state()
@@ -97,7 +98,7 @@ def train_vssa(self) -> List[int]:
 
             if t > (self.training_times - self.time_avg_range):
                 accuracy_list[action - 1] += 1
-    print("%s: finished" % self.__class__.__name__)
+    print("{}: finished".format(self.__class__.__name__))
     return [r / (self.experiments * (self.time_avg_range // 100)) for r in accuracy_list]
 
 
@@ -111,7 +112,7 @@ def not_terminated(action_stat: List[int]) -> bool:
 
 
 def speed_test_fssa(self) -> int:
-    print("%s: speed test starts..." % self.__class__.__name__)
+    print("{}: speed test starts...".format(self.__class__.__name__))
     time_to_converge_sum = 0
     accuracy_record_range = Constant.ACCURACY_RECORD_RANGE.value
     for e in range(self.experiments):
@@ -139,14 +140,14 @@ def speed_test_fssa(self) -> int:
             queue.append(action)
             action_stat[action - 1] += 1
         time_to_converge_sum += time_to_converge
-    print("%s: speed test finished" % self.__class__.__name__)
+    print("{}: speed test finished".format(self.__class__.__name__))
     result = time_to_converge_sum // self.experiments
-    print("%s: time to converge" % self.__class__.__name__, result)
+    print("{}: time to converge".format(self.__class__.__name__), result)
     return result
 
 
 def speed_test_vssa(self) -> int:
-    print("%s: speed test starts..." % self.__class__.__name__)
+    print("{}: speed test starts...".format(self.__class__.__name__))
     time_to_converge_sum = 0
     accuracy_record_range = Constant.ACCURACY_RECORD_RANGE.value
     for e in range(self.experiments):
@@ -172,10 +173,21 @@ def speed_test_vssa(self) -> int:
             queue.append(action)
             action_stat[action - 1] += 1
         time_to_converge_sum += time_to_converge
-    print("%s: speed test finished" % self.__class__.__name__)
+    print("{}: speed test finished".format(self.__class__.__name__))
     result = time_to_converge_sum // self.experiments
-    print("%s: time to converge" % self.__class__.__name__, result)
+    print("{}: time to converge".format(self.__class__.__name__), result)
     return result
+
+
+def plot_group_bar_fssa(self, state_depth):
+    """
+    compare ensemble average between default N from config and specified N
+    """
+    y1 = self.train()
+    print(y1)
+    y2 = self.train(n=state_depth)
+    print(y2)
+    plot_group_bar(self.__class__.__name__, y1, y2, Constant.STATE_DEPTH.value, state_depth)
 
 
 if __name__ == '__main__':

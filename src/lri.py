@@ -1,6 +1,7 @@
 from config import Constant
 from core import train_vssa, speed_test_vssa
 from random import uniform
+from plot import plot_bar
 from typing import List
 
 
@@ -40,9 +41,15 @@ class Lri:
     def speed_test(self) -> int:
         return speed_test_vssa(self)
 
+    def plot_bar(self) -> None:
+        y = self.train()
+        print(y)
+        plot_bar(self.__class__.__name__, y, "λ", self.a)
+
 
 if __name__ == '__main__':
     # test
     la = Lri()
-    print(la.train())
+    # print(la.train())
     # la.speed_test()
+    la.plot_bar()

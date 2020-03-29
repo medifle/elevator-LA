@@ -7,9 +7,13 @@ class Constant(Enum):
     EXPERIMENTS = 100  # 100
     TRAINING_TIMES = 11000
     TIME_AVG_RANGE = 1000
+
+    # FSSA
     GAUSS_SIGMA = 1.7
-    STATE_DEPTH = 6  # FSSA
-    LEARNING_PARAM = 0.0018  # Lri
+    STATE_DEPTH = 6
+
+    # VSSA: Lri
+    LEARNING_PARAM = 0.0018
 
     # speed test
     TERMINAL_ACCURACY = 0.9  # termination threshold
