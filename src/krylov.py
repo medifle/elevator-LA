@@ -39,5 +39,5 @@ class Krylov:
 if __name__ == '__main__':
     # test
     la = Krylov()
-    # print(la.train())
-    la.speed_test()
+    print(la.train())
+    # la.speed_test()

@@ -35,5 +35,5 @@ class Tsetlin:
 if __name__ == '__main__':
     # test
     la = Tsetlin()
-    # print(la.train())
-    la.speed_test()
+    print(la.train())
+    # la.speed_test()

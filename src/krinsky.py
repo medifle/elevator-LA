@@ -37,6 +37,6 @@ class Krinsky:
 if __name__ == '__main__':
     # test
     la = Krinsky()
-    # print(la.train())
-    la.speed_test()
+    print(la.train())
+    # la.speed_test()
 

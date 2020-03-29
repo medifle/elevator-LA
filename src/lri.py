@@ -1,5 +1,5 @@
 from config import Constant
-from core import train_vssa
+from core import train_vssa, speed_test_vssa
 from random import uniform
 from typing import List
 
@@ -37,8 +37,12 @@ class Lri:
     def train(self) -> List[int]:
         return train_vssa(self)
 
+    def speed_test(self) -> int:
+        return speed_test_vssa(self)
+
 
 if __name__ == '__main__':
     # test
     la = Lri()
     print(la.train())
+    # la.speed_test()

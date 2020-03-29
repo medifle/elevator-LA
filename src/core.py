@@ -63,7 +63,7 @@ def get_action_fssa(self, state: int) -> int:
 
 
 def train_fssa(self) -> List[int]:
-    print("%s : start training..." % self.__class__.__name__)
+    print("%s: start training..." % self.__class__.__name__)
     accuracy_list = [0 for i in range(self.actions)]
     for e in range(self.experiments):
         self.reset_state()
@@ -72,19 +72,18 @@ def train_fssa(self) -> List[int]:
             beta = environment(action)
 
             # print('{:>2}'.format(self.state), action, beta)  # test
-
             if beta == 1:  # penalty
                 self.state = self.got_penalty(self.state)
             else:  # reward
                 self.state = self.got_reward(self.state)
             if t > (self.training_times - self.time_avg_range):
                 accuracy_list[action - 1] += 1
-    print("%s : finished" % self.__class__.__name__)
+    print("%s: finished" % self.__class__.__name__)
     return [r / (self.experiments * (self.time_avg_range // 100)) for r in accuracy_list]
 
 
 def train_vssa(self) -> List[int]:
-    print("%s : start training..." % self.__class__.__name__)
+    print("%s: start training..." % self.__class__.__name__)
     accuracy_list = [0 for i in range(self.actions)]
     for e in range(self.experiments):
         self.reset_state()
@@ -92,18 +91,18 @@ def train_vssa(self) -> List[int]:
             action = self.get_action()
             beta = environment(action)
 
+            # print(self.state, action, beta)  # test
             if beta == 0:
-                # print(self.state, action, beta)  # test
                 self.got_reward(action)
 
             if t > (self.training_times - self.time_avg_range):
                 accuracy_list[action - 1] += 1
-    print("%s : finished" % self.__class__.__name__)
+    print("%s: finished" % self.__class__.__name__)
     return [r / (self.experiments * (self.time_avg_range // 100)) for r in accuracy_list]
 
 
 def not_terminated(action_stat: List[int]) -> bool:
-    accuracy_calc_range = Constant.ACCURACY_CALC_RANGE.value
+    accuracy_calc_range = Constant.ACCURACY_RECORD_RANGE.value
     terminal_accuracy = Constant.TERMINAL_ACCURACY.value
     for e in action_stat:
         if e / accuracy_calc_range > terminal_accuracy:
@@ -111,20 +110,10 @@ def not_terminated(action_stat: List[int]) -> bool:
     return True
 
 
-# def get_converged_accuracy(action_stat: List[int]) -> float:
-#     accuracy_calc_range = Constant.ACCURACY_CALC_RANGE.value
-#     max_accuracy = 0.0
-#     for e in action_stat:
-#         accuracy = e / accuracy_calc_range
-#         if accuracy > max_accuracy:
-#             max_accuracy = accuracy
-#     return max_accuracy
-
-
 def speed_test_fssa(self) -> int:
-    print("%s : speed test starts..." % self.__class__.__name__)
+    print("%s: speed test starts..." % self.__class__.__name__)
     time_to_converge_sum = 0
-    accuracy_calc_range = Constant.ACCURACY_CALC_RANGE.value
+    accuracy_record_range = Constant.ACCURACY_RECORD_RANGE.value
     for e in range(self.experiments):
         self.reset_state()
         queue = deque([])
@@ -137,42 +126,68 @@ def speed_test_fssa(self) -> int:
             action = self.get_action(self.state)
             beta = environment(action)
 
-            if len(queue) > accuracy_calc_range:
-                poped_action = queue.popleft()
-                action_stat[poped_action - 1] -= 1
-
-            queue.append(action)
-            action_stat[action - 1] += 1
-
             # print('{:>2}'.format(self.state), action, beta, queue)  # test
-
             if beta == 1:  # penalty
                 self.state = self.got_penalty(self.state)
             else:  # reward
                 self.state = self.got_reward(self.state)
 
+            # maintain queue and action_stat
+            if len(queue) > accuracy_record_range:
+                poped_action = queue.popleft()
+                action_stat[poped_action - 1] -= 1
+            queue.append(action)
+            action_stat[action - 1] += 1
         time_to_converge_sum += time_to_converge
-    print("%s : speed test finished" % self.__class__.__name__)
-    result = time_to_converge_sum / self.experiments
-    print("%s : time to converge" % self.__class__.__name__, result)
+    print("%s: speed test finished" % self.__class__.__name__)
+    result = time_to_converge_sum // self.experiments
+    print("%s: time to converge" % self.__class__.__name__, result)
+    return result
+
+
+def speed_test_vssa(self) -> int:
+    print("%s: speed test starts..." % self.__class__.__name__)
+    time_to_converge_sum = 0
+    accuracy_record_range = Constant.ACCURACY_RECORD_RANGE.value
+    for e in range(self.experiments):
+        self.reset_state()
+        queue = deque([])
+        action_stat = [0 for i in range(self.actions)]
+
+        time_to_converge = 0
+        while not_terminated(action_stat):
+            time_to_converge += 1
+
+            action = self.get_action()
+            beta = environment(action)
+
+            # print(self.state, action, beta, queue)  # test
+            if beta == 0:
+                self.got_reward(action)
+
+            # maintain queue and action_stat
+            if len(queue) > accuracy_record_range:
+                poped_action = queue.popleft()
+                action_stat[poped_action - 1] -= 1
+            queue.append(action)
+            action_stat[action - 1] += 1
+        time_to_converge_sum += time_to_converge
+    print("%s: speed test finished" % self.__class__.__name__)
+    result = time_to_converge_sum // self.experiments
+    print("%s: time to converge" % self.__class__.__name__, result)
     return result
 
 
 if __name__ == '__main__':
-    # test
-    count = 0
-    # for e in range(50):
-    #     arr = []
-    #     arr.append(environment(1))
-    #     for i in range(1, 7):
-    #         arr.append(environment(i))
-    #     print(arr)
-
-    # for i in range(1000):
-    #     print(gauss(0, 2))
-
-    # q = deque([])
-    # q.append(1)
-    # q.append(3)
-    # print(q)
-    # print(len(q))
+    # test: environment C_i distribution
+    countArr = [0, 0, 0, 0, 0, 0]
+    iterations = 1000
+    for e in range(iterations):
+        arr = []
+        for i in range(1, 7):
+            arr.append(environment(i))
+        print(arr)
+        for j in range(6):
+            if arr[j] == 0:
+                countArr[j] += 1
+    print([countSum / iterations for countSum in countArr])

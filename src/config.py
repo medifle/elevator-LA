@@ -10,5 +10,7 @@ class Constant(Enum):
     GAUSS_SIGMA = 1.7
     STATE_DEPTH = 6  # FSSA
     LEARNING_PARAM = 0.0018  # Lri
-    TERMINAL_ACCURACY = 0.9  # speed test termination threshold
-    ACCURACY_CALC_RANGE = 50
+
+    # speed test
+    TERMINAL_ACCURACY = 0.9  # termination threshold
+    ACCURACY_RECORD_RANGE = 50
