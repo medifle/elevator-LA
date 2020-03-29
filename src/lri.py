@@ -1,4 +1,4 @@
-from constant import Constant
+from config import Constant
 from core import train_vssa
 from random import uniform
 from typing import List
@@ -12,7 +12,6 @@ class Lri:
         self.training_times = Constant.TRAINING_TIMES.value
         self.state = [1 / self.actions for i in range(self.actions)]  # action probability vector
         self.a = Constant.LEARNING_PARAM.value
-        self.targetAccuracy = Constant.TARGET_ACCURACY.value
 
     def reset_state(self):
         self.state = [1 / self.actions for i in range(self.actions)]
@@ -26,12 +25,13 @@ class Lri:
                 self.state[i - 1] = (1 - self.a) * self.state[i - 1]
 
     def get_action(self) -> int:
+        """choose action by action probability distribution"""
         r = uniform(0, sum(self.state))
-        prob_accu = 0
+        prob_accumulation = 0
         state_length = len(self.state)
         for i in range(state_length):
-            prob_accu += self.state[i]
-            if prob_accu > r:
+            prob_accumulation += self.state[i]
+            if prob_accumulation > r:
                 return i + 1
 
     def train(self) -> List[int]:

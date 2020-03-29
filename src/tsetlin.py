@@ -1,5 +1,5 @@
-from constant import Constant
-from core import got_penalty_tsetlin, got_reward_tsetlin, train_fssa, get_action_fssa
+from config import Constant
+from core import got_penalty_tsetlin, got_reward_tsetlin, train_fssa, get_action_fssa, speed_test_fssa
 from random import randint
 from typing import List
 
@@ -12,7 +12,6 @@ class Tsetlin:
         self.training_times = Constant.TRAINING_TIMES.value
         self.state_depth = Constant.STATE_DEPTH.value
         self.state = randint(1, self.actions * self.state_depth)  # random chosen initial state
-        self.targetAccuracy = Constant.TARGET_ACCURACY.value
 
     def reset_state(self):
         self.state = randint(1, self.actions * self.state_depth)
@@ -29,8 +28,12 @@ class Tsetlin:
     def train(self) -> List[int]:
         return train_fssa(self)
 
+    def speed_test(self) -> int:
+        return speed_test_fssa(self)
+
 
 if __name__ == '__main__':
     # test
     la = Tsetlin()
-    print(la.train())
+    # print(la.train())
+    la.speed_test()

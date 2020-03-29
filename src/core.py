@@ -1,7 +1,8 @@
 from math import ceil
 from random import gauss, random
 from typing import List
-from constant import Constant
+from config import Constant
+from collections import deque
 import sys
 
 
@@ -63,7 +64,7 @@ def get_action_fssa(self, state: int) -> int:
 
 def train_fssa(self) -> List[int]:
     print("%s : start training..." % self.__class__.__name__)
-    result = [0 for i in range(self.actions)]
+    accuracy_list = [0 for i in range(self.actions)]
     for e in range(self.experiments):
         self.reset_state()
         for t in range(self.training_times):
@@ -77,14 +78,14 @@ def train_fssa(self) -> List[int]:
             else:  # reward
                 self.state = self.got_reward(self.state)
             if t > (self.training_times - self.time_avg_range):
-                result[action - 1] += 1
+                accuracy_list[action - 1] += 1
     print("%s : finished" % self.__class__.__name__)
-    return [r / (self.experiments * (self.time_avg_range // 100)) for r in result]
+    return [r / (self.experiments * (self.time_avg_range // 100)) for r in accuracy_list]
 
 
 def train_vssa(self) -> List[int]:
     print("%s : start training..." % self.__class__.__name__)
-    result = [0 for i in range(self.actions)]
+    accuracy_list = [0 for i in range(self.actions)]
     for e in range(self.experiments):
         self.reset_state()
         for t in range(self.training_times):
@@ -96,9 +97,65 @@ def train_vssa(self) -> List[int]:
                 self.got_reward(action)
 
             if t > (self.training_times - self.time_avg_range):
-                result[action - 1] += 1
+                accuracy_list[action - 1] += 1
     print("%s : finished" % self.__class__.__name__)
-    return [r / (self.experiments * (self.time_avg_range // 100)) for r in result]
+    return [r / (self.experiments * (self.time_avg_range // 100)) for r in accuracy_list]
+
+
+def not_terminated(action_stat: List[int]) -> bool:
+    accuracy_calc_range = Constant.ACCURACY_CALC_RANGE.value
+    terminal_accuracy = Constant.TERMINAL_ACCURACY.value
+    for e in action_stat:
+        if e / accuracy_calc_range > terminal_accuracy:
+            return False
+    return True
+
+
+# def get_converged_accuracy(action_stat: List[int]) -> float:
+#     accuracy_calc_range = Constant.ACCURACY_CALC_RANGE.value
+#     max_accuracy = 0.0
+#     for e in action_stat:
+#         accuracy = e / accuracy_calc_range
+#         if accuracy > max_accuracy:
+#             max_accuracy = accuracy
+#     return max_accuracy
+
+
+def speed_test_fssa(self) -> int:
+    print("%s : speed test starts..." % self.__class__.__name__)
+    time_to_converge_sum = 0
+    accuracy_calc_range = Constant.ACCURACY_CALC_RANGE.value
+    for e in range(self.experiments):
+        self.reset_state()
+        queue = deque([])
+        action_stat = [0 for i in range(self.actions)]
+
+        time_to_converge = 0
+        while not_terminated(action_stat):
+            time_to_converge += 1
+
+            action = self.get_action(self.state)
+            beta = environment(action)
+
+            if len(queue) > accuracy_calc_range:
+                poped_action = queue.popleft()
+                action_stat[poped_action - 1] -= 1
+
+            queue.append(action)
+            action_stat[action - 1] += 1
+
+            # print('{:>2}'.format(self.state), action, beta, queue)  # test
+
+            if beta == 1:  # penalty
+                self.state = self.got_penalty(self.state)
+            else:  # reward
+                self.state = self.got_reward(self.state)
+
+        time_to_converge_sum += time_to_converge
+    print("%s : speed test finished" % self.__class__.__name__)
+    result = time_to_converge_sum / self.experiments
+    print("%s : time to converge" % self.__class__.__name__, result)
+    return result
 
 
 if __name__ == '__main__':
@@ -113,3 +170,9 @@ if __name__ == '__main__':
 
     # for i in range(1000):
     #     print(gauss(0, 2))
+
+    # q = deque([])
+    # q.append(1)
+    # q.append(3)
+    # print(q)
+    # print(len(q))
