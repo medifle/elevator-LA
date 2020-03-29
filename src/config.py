@@ -13,7 +13,7 @@ class Constant(Enum):
     STATE_DEPTH = 6
 
     # VSSA: Lri
-    LEARNING_PARAM = 0.0018
+    LEARNING_PARAM = 0.05  # 0 < λ < 1
 
     # speed test
     TERMINAL_ACCURACY = 0.9  # termination threshold

@@ -3,7 +3,7 @@ from random import gauss, random
 from typing import List
 from config import Constant
 from collections import deque
-from plot import plot_group_bar
+from plot import plot_two_bar
 import sys
 
 
@@ -179,7 +179,7 @@ def speed_test_vssa(self) -> int:
     return result
 
 
-def plot_group_bar_fssa(self, state_depth):
+def plot_two_bar_fssa(self, state_depth):
     """
     compare ensemble average between default N from config and specified N
     """
@@ -187,11 +187,11 @@ def plot_group_bar_fssa(self, state_depth):
     print(y1)
     y2 = self.train(n=state_depth)
     print(y2)
-    plot_group_bar(self.__class__.__name__, y1, y2, Constant.STATE_DEPTH.value, state_depth)
+    plot_two_bar(self.__class__.__name__, y1, y2, "N", Constant.STATE_DEPTH.value, state_depth)
 
 
 if __name__ == '__main__':
-    # test: environment C_i distribution
+    # test: environment reward feedback distribution
     countArr = [0, 0, 0, 0, 0, 0]
     iterations = 1000
     for e in range(iterations):

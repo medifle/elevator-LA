@@ -1,5 +1,5 @@
 from config import Constant
-from core import got_penalty_tsetlin, train_fssa, get_action_fssa, speed_test_fssa, plot_group_bar_fssa
+from core import got_penalty_tsetlin, train_fssa, get_action_fssa, speed_test_fssa, plot_two_bar_fssa
 from random import randint
 from typing import List
 
@@ -37,13 +37,13 @@ class Krinsky:
     def speed_test(self) -> int:
         return speed_test_fssa(self)
 
-    def plot_group_bar(self, state_depth: int) -> None:
-        plot_group_bar_fssa(self, state_depth)
+    def plot_two_bar(self, state_depth: int) -> None:
+        plot_two_bar_fssa(self, state_depth)
 
 
 if __name__ == '__main__':
     # test
     la = Krinsky()
     # print(la.train())
-    # la.speed_test()
-    la.plot_group_bar(50)
+    la.speed_test()
+    # la.plot_two_bar(50)

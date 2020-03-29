@@ -1,7 +1,7 @@
 from config import Constant
 from core import train_vssa, speed_test_vssa
 from random import uniform
-from plot import plot_bar
+from plot import plot_bar, plot_two_bar
 from typing import List
 
 
@@ -35,7 +35,10 @@ class Lri:
             if prob_accumulation > r:
                 return i + 1
 
-    def train(self) -> List[int]:
+    def train(self, **kwargs: float) -> List[int]:
+        lp = kwargs.get('lp', None)
+        if lp:
+            self.a = lp
         return train_vssa(self)
 
     def speed_test(self) -> int:
@@ -46,10 +49,16 @@ class Lri:
         print(y)
         plot_bar(self.__class__.__name__, y, "λ", self.a)
 
+    def plot_two_bar(self, lp: float) -> None:
+        y1 = self.train()
+        print(y1)
+        y2 = self.train(lp=lp)
+        print(y2)
+        plot_two_bar(self.__class__.__name__, y1, y2, "λ", Constant.LEARNING_PARAM.value, lp, 4)
 
 if __name__ == '__main__':
     # test
     la = Lri()
-    # print(la.train())
+    # print(la.train(lp=0.05))
     # la.speed_test()
-    la.plot_bar()
+    la.plot_two_bar(0.5500)
