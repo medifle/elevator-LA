@@ -34,8 +34,8 @@ class Krinsky:
             self.state_depth = n
         return train_fssa(self)
 
-    def speed_test(self) -> int:
-        return speed_test_fssa(self)
+    def speed_test(self, best_action: int) -> int:
+        return speed_test_fssa(self, best_action)
 
     def plot_two_bar(self, state_depth: int) -> None:
         plot_two_bar_fssa(self, state_depth)
@@ -45,5 +45,5 @@ if __name__ == '__main__':
     # test
     la = Krinsky()
     # print(la.train())
-    la.speed_test()
+    la.speed_test(1)
     # la.plot_two_bar(50)

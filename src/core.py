@@ -102,26 +102,25 @@ def train_vssa(self) -> List[int]:
     return [r / (self.experiments * (self.time_avg_range // 100)) for r in accuracy_list]
 
 
-def not_terminated(action_stat: List[int]) -> bool:
+def not_terminated(best_action_stat: int) -> bool:
     accuracy_calc_range = Constant.ACCURACY_RECORD_RANGE.value
     terminal_accuracy = Constant.TERMINAL_ACCURACY.value
-    for e in action_stat:
-        if e / accuracy_calc_range > terminal_accuracy:
-            return False
+    if best_action_stat / accuracy_calc_range >= terminal_accuracy:
+        return False
     return True
 
 
-def speed_test_fssa(self) -> int:
+def speed_test_fssa(self, best_action: int) -> int:
     print("{}: speed test starts...".format(self.__class__.__name__))
     time_to_converge_sum = 0
     accuracy_record_range = Constant.ACCURACY_RECORD_RANGE.value
-    for e in range(self.experiments):
+    for exp in range(self.experiments):
         self.reset_state()
         queue = deque([])
-        action_stat = [0 for i in range(self.actions)]
+        best_action_stat = 0
 
         time_to_converge = 0
-        while not_terminated(action_stat):
+        while not_terminated(best_action_stat):
             time_to_converge += 1
 
             action = self.get_action(self.state)
@@ -133,31 +132,39 @@ def speed_test_fssa(self) -> int:
             else:  # reward
                 self.state = self.got_reward(self.state)
 
-            # maintain queue and action_stat
+            # maintain queue and best_action_stat
             if len(queue) > accuracy_record_range:
                 poped_action = queue.popleft()
-                action_stat[poped_action - 1] -= 1
+                if poped_action == best_action:
+                    best_action_stat -= 1
             queue.append(action)
-            action_stat[action - 1] += 1
+            if action == best_action:
+                best_action_stat += 1
         time_to_converge_sum += time_to_converge
     print("{}: speed test finished".format(self.__class__.__name__))
     result = time_to_converge_sum // self.experiments
-    print("{}: time to converge".format(self.__class__.__name__), result)
+    print("{}: time to converge on the best action".format(self.__class__.__name__), result)
     return result
 
 
-def speed_test_vssa(self) -> int:
+def speed_test_vssa(self, best_action: int) -> int:
     print("{}: speed test starts...".format(self.__class__.__name__))
     time_to_converge_sum = 0
     accuracy_record_range = Constant.ACCURACY_RECORD_RANGE.value
-    for e in range(self.experiments):
+    for exp in range(self.experiments):
         self.reset_state()
         queue = deque([])
-        action_stat = [0 for i in range(self.actions)]
+        best_action_stat = 0
 
         time_to_converge = 0
-        while not_terminated(action_stat):
+        while not_terminated(best_action_stat):
             time_to_converge += 1
+
+            # if stuck in wrong direction, exit to prevent infinite running time
+            for si in range(len(self.state)):
+                if si + 1 != best_action and self.state[si] > .99:
+                    print("stuck in action", si + 1)
+                    sys.exit()
 
             action = self.get_action()
             beta = environment(action)
@@ -169,9 +176,11 @@ def speed_test_vssa(self) -> int:
             # maintain queue and action_stat
             if len(queue) > accuracy_record_range:
                 poped_action = queue.popleft()
-                action_stat[poped_action - 1] -= 1
+                if poped_action == best_action:
+                    best_action_stat -= 1
             queue.append(action)
-            action_stat[action - 1] += 1
+            if action == best_action:
+                best_action_stat += 1
         time_to_converge_sum += time_to_converge
     print("{}: speed test finished".format(self.__class__.__name__))
     result = time_to_converge_sum // self.experiments
@@ -194,7 +203,7 @@ if __name__ == '__main__':
     # test: environment reward feedback distribution
     countArr = [0, 0, 0, 0, 0, 0]
     iterations = 1000
-    for e in range(iterations):
+    for itr in range(iterations):
         arr = []
         for i in range(1, 7):
             arr.append(environment(i))

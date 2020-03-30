@@ -41,8 +41,8 @@ class Lri:
             self.a = lp
         return train_vssa(self)
 
-    def speed_test(self) -> int:
-        return speed_test_vssa(self)
+    def speed_test(self, best_action: int) -> int:
+        return speed_test_vssa(self, best_action)
 
     def plot_bar(self) -> None:
         y = self.train()
@@ -59,6 +59,6 @@ class Lri:
 if __name__ == '__main__':
     # test
     la = Lri()
-    # print(la.train(lp=0.05))
-    # la.speed_test()
-    la.plot_two_bar(0.5500)
+    # print(la.train())
+    la.speed_test(1)
+    # la.plot_two_bar(0.5000)

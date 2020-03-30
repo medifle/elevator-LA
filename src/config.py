@@ -9,11 +9,11 @@ class Constant(Enum):
     TIME_AVG_RANGE = 1000
 
     # FSSA
-    GAUSS_SIGMA = 1.7
+    GAUSS_SIGMA = 1
     STATE_DEPTH = 6
 
     # VSSA: Lri
-    LEARNING_PARAM = 0.05  # 0 < λ < 1
+    LEARNING_PARAM = 0.5  # 0 < λ < 1
 
     # speed test
     TERMINAL_ACCURACY = 0.9  # termination threshold
