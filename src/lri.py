@@ -19,7 +19,7 @@ class Lri:
 
     def got_reward(self, action: int) -> None:
         state_length = len(self.state)
-        for i in range(state_length):
+        for i in range(1, state_length + 1):
             if i == action:
                 self.state[i - 1] = self.state[i - 1] + self.a * (1 - self.state[i - 1])
             else:
@@ -56,9 +56,10 @@ class Lri:
         print(y2)
         plot_two_bar(self.__class__.__name__, y1, y2, "λ", Constant.LEARNING_PARAM.value, lp, 4)
 
+
 if __name__ == '__main__':
     # test
     la = Lri()
-    # print(la.train())
-    la.speed_test(1)
+    print(la.train())
+    # la.speed_test(1)
     # la.plot_two_bar(0.5000)
